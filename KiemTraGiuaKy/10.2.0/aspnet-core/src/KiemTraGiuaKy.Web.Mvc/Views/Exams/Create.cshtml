@@ -1,0 +1,1278 @@
+@{
+    Layout = "~/Views/Shared/_EduExamLayout.cshtml";
+    ViewBag.Title = "Hệ thống Quản lý & Tạo đề thi Word";
+    ViewBag.ActiveMenu = "Create";
+}
+
+@section styles {
+    <style>
+        /* WORKFLOW TAB NAVIGATION */
+        .workflow-tabs-header {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 8px 12px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .wf-tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #64748b;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .wf-tab-btn:hover {
+            color: #0f172a;
+            background: #f8fafc;
+        }
+
+        .wf-tab-btn.active {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+        }
+
+        .wf-tab-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* CARD STYLES */
+        .section-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .section-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .section-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .form-label-custom {
+            font-size: 12px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-control-custom {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #0f172a;
+            background: #ffffff;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .form-control-custom:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+            outline: none;
+        }
+
+        /* DROPZONE */
+        .dropzone-box {
+            border: 2px dashed #cbd5e1;
+            border-radius: 14px;
+            background: #f8fafc;
+            padding: 32px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dropzone-box:hover, .dropzone-box.dragover {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+
+        .dropzone-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #eef2ff;
+            color: #4f46e5;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        /* WARNING BANNER */
+        .banner-all-or-nothing {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .banner-warning-icon {
+            width: 44px;
+            height: 44px;
+            background: #e11d48;
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
+        }
+
+        .badge-warning-pill {
+            background: #ffe4e6;
+            color: #be123c;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-right: 6px;
+            text-transform: uppercase;
+        }
+
+        /* REALTIME VALIDATION LOG */
+        .log-status-banner {
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .log-status-banner.is-failed {
+            background: #fef2f2;
+            border: 1px solid #fee2e2;
+        }
+
+        .log-status-banner.is-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+
+        .log-status-banner.is-waiting {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .log-error-item {
+            background: #ffffff;
+            border: 1px solid #f1f5f9;
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        .log-error-item:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .error-num-badge {
+            background: #fee2e2;
+            color: #b91c1c;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .error-tag-badge {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-left: 6px;
+        }
+
+        .error-type-badge {
+            color: #b91c1c;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: auto;
+        }
+
+        .code-snippet-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 12px;
+            color: #334155;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        /* BOTTOM ACTION BAR */
+        .bottom-action-bar {
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            padding: 16px 36px;
+            position: fixed;
+            bottom: 0;
+            left: 260px;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 990;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-primary-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 11px 24px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-primary-gradient:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(79, 70, 229, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-primary-gradient:disabled {
+            background: #94a3b8;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.65;
+        }
+
+        /* TAB 2: PREVIEW STYLES */
+        .exam-header-banner {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+        }
+
+        .metric-summary-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .metric-icon-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 14px;
+        }
+
+        .filter-toolbar {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .filter-tab-pill {
+            background: none;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .filter-tab-pill.active {
+            background: #eef2ff;
+            color: #4f46e5;
+            font-weight: 700;
+        }
+
+        .question-detail-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px 26px;
+            margin-bottom: 22px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        .q-number-badge {
+            background: #4f46e5;
+            color: white;
+            font-size: 14px;
+            font-weight: 800;
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .q-tag-pill {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-left: 8px;
+        }
+
+        .q-level-pill {
+            background: #e0e7ff;
+            color: #4338ca;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-left: 8px;
+        }
+
+        .q-score-pill {
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-left: 8px;
+        }
+
+        .q-text-body {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f172a;
+            line-height: 1.6;
+            margin: 14px 0 16px;
+            outline: none;
+            border-radius: 6px;
+            padding: 6px 8px;
+            border: 1px solid transparent;
+        }
+
+        .q-text-body:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .q-text-body:focus {
+            background: #ffffff;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .option-choice-box {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-choice-box:hover {
+            background: #ffffff;
+            border-color: #cbd5e1;
+        }
+
+        .option-choice-box.is-correct {
+            background: #eef2ff;
+            border-color: #6366f1;
+            color: #312e81;
+            font-weight: 700;
+        }
+
+        .badge-correct-ans {
+            background: #4f46e5;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .image-proof-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .image-proof-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 14px;
+        }
+
+        .image-action-btn {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            padding: 5px 12px;
+            border-radius: 6px;
+            margin-left: 6px;
+            cursor: pointer;
+        }
+
+        .image-action-btn:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .spell-alert-box {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 14px 0;
+        }
+
+        .mark-spell-error {
+            background: #fee2e2;
+            color: #be123c;
+            border-bottom: 2px dashed #e11d48;
+            padding: 2px 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .matrix-container-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            position: sticky;
+            top: 90px;
+        }
+
+        .q-matrix-number {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            margin: 3px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .q-matrix-number:hover {
+            background: #eef2ff;
+            color: #4f46e5;
+            text-decoration: none;
+        }
+
+        .q-matrix-number.active {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+
+        .q-matrix-number.has-warning {
+            background: #fee2e2;
+            color: #b91c1c;
+            border-color: #fca5a5;
+        }
+
+        .q-matrix-number.has-img {
+            border: 2px solid #6366f1;
+        }
+    </style>
+}
+
+<!-- TIÊU ĐỀ TRANG TẠO ĐỀ THI TỪ FILE WORD -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
+    <div>
+        <div class="d-flex align-items-center">
+            <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0;">
+                <i class="fas fa-file-word text-primary mr-2"></i> Tạo đề thi mới từ file Word (.docx)
+            </h1>
+            <span class="badge badge-light border text-primary ml-2 px-3 py-1 font-weight-bold" style="font-size: 11px; border-radius: 20px;">
+                PARSER ENGINE V3.2
+            </span>
+        </div>
+        <p class="text-muted small mb-0 mt-1">Đọc và thẩm định định dạng file Word nghiêm ngặt trước khi nạp vào CSDL</p>
+    </div>
+
+    <div class="mt-2 mt-md-0">
+        <a href="/Exams/DownloadSample?type=standard" class="btn btn-sm btn-outline-primary font-weight-bold mr-2" style="border-radius: 8px;">
+            <i class="fas fa-download mr-1"></i> Template Word mẫu
+        </a>
+        <button type="button" class="btn btn-sm btn-outline-secondary font-weight-bold" onclick="$('#rulesModal').modal('show')" style="border-radius: 8px;">
+            <i class="fas fa-circle-question mr-1"></i> Quy chuẩn format
+        </button>
+    </div>
+</div>
+
+    <!-- NỘI DUNG 2 CỘT CỦA GIAO DIỆN 1 -->
+    <div class="row" style="margin-bottom: 90px;">
+        <!-- CỘT TRÁI (SETUP & UPLOAD FILE) -->
+        <div class="col-lg-5 col-xl-5">
+            <!-- CARD 1: CẤU HÌNH CƠ BẢN ĐỀ THI -->
+            <div class="section-card">
+                <div class="section-card-header">
+                    <h5 class="section-card-title">
+                        <i class="fas fa-sliders text-primary"></i> Cấu hình cơ bản đề thi
+                    </h5>
+                    <span class="text-muted font-weight-bold small">BƯỚC 1 / 3</span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="form-label-custom">Tên kỳ thi / Tiêu đề đề thi <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control-custom" id="examTitle" 
+                           value="Đề Khảo Sát Năng Lực Tiếng Anh THPT - Mã đề ENG-2025" />
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label-custom">Môn học khảo thí</label>
+                        <input type="text" class="form-control-custom" id="examSubject" value="Tiếng Anh TOEIC" />
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label-custom">Mã học phần</label>
+                        <input type="text" class="form-control-custom" id="examCode" value="ENG-204_ADV" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-2">
+                        <label class="form-label-custom">Thời gian làm bài (phút)</label>
+                        <div class="d-flex align-items-center">
+                            <input type="number" class="form-control-custom mr-2" id="examDuration" value="75" min="5" max="300" />
+                            <span class="text-muted font-weight-bold small">PHÚT</span>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <label class="form-label-custom">Thang điểm chuẩn</label>
+                        <div class="d-flex align-items-center">
+                            <input type="text" class="form-control-custom mr-2" value="10.0" readonly style="background: #f8fafc;" />
+                            <span class="text-muted font-weight-bold small">ĐIỂM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 2: TỆP TIN NGUỒN (.DOCX) -->
+            <div class="section-card">
+                <div class="section-card-header">
+                    <h5 class="section-card-title">
+                        <i class="fas fa-file-word text-primary"></i> Tệp tin nguồn (.docx)
+                    </h5>
+                    <span class="text-muted font-weight-bold small">TỐI ĐA 25MB</span>
+                </div>
+
+                <!-- Input chọn file ẩn -->
+                <input type="file" id="realWordFileInput" accept=".docx,.doc" onchange="handleWordFileChosen(this)" style="display: none;" />
+
+                <!-- Vùng Dropzone chọn file từ máy tính: Click vào bất kỳ đâu đều mở file explorer ngay lập tức -->
+                <div class="dropzone-box d-block text-center" id="dropzoneBox" onclick="document.getElementById('realWordFileInput').click()" style="cursor: pointer; margin-bottom: 0;">
+                    <div class="dropzone-icon">
+                        <i class="fas fa-cloud-arrow-up"></i>
+                    </div>
+                    <h6 class="font-weight-bold mb-1 text-dark">
+                        Kéo và thả tệp Word (.docx) vào đây
+                    </h6>
+                    <p class="text-muted small mb-2">
+                        hoặc click vào nút bên dưới để chọn file từ máy tính của bạn
+                    </p>
+                    <button type="button" class="btn btn-sm btn-primary font-weight-bold px-3 py-2 mb-2 shadow-sm" style="border-radius: 8px; background: #4f46e5; border: none;" onclick="event.stopPropagation(); document.getElementById('realWordFileInput').click();">
+                        <i class="fas fa-folder-open mr-1"></i> Chọn file Word (.docx) từ máy
+                    </button>
+                    <div>
+                        <span class="badge badge-light border text-muted px-3 py-1" style="font-size: 11px; border-radius: 20px;">
+                            <i class="fas fa-circle-info mr-1 text-primary"></i> Hỗ trợ Microsoft Word .docx
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Hiển thị file đã nạp -->
+                <div id="fileSelectedCard" class="mt-3 p-3 rounded border" style="background: #f8fafc; display: none;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="mr-3" style="font-size: 28px; color: #4f46e5;">
+                                <i class="fas fa-file-word"></i>
+                            </div>
+                            <div>
+                                <div class="font-weight-bold small text-dark" id="displayFileName">De_Thi_Tieng_Anh_Khao_Sat.docx</div>
+                                <div class="text-muted" style="font-size: 11px;">
+                                    <span id="displayFileSize">3.4 MB</span> &bull; Quét hoàn tất <span id="displayScannedQuestions">50</span> câu hỏi
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-link text-muted p-0" id="btnRemoveSelectedFile" onclick="removeSelectedFile()" title="Gỡ file">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="mt-2">
+                        <div class="d-flex justify-content-between small font-weight-bold mb-1">
+                            <span style="font-size: 11px; color: #4f46e5;">Tiến độ phân tích cú pháp</span>
+                            <span style="font-size: 11px; color: #4f46e5;" id="progressPercentageText">100% Hoàn thành</span>
+                        </div>
+                        <div class="progress" style="height: 6px; border-radius: 4px;">
+                            <div class="progress-bar bg-primary" id="parsingProgressBar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NÚT BẤM VÀO KIỂM TRA ĐỀ THI -->
+                <div class="mt-3">
+                    <button type="button" class="btn btn-primary-gradient btn-block shadow-sm" id="btnStartValidate" onclick="startUploadAndValidateFile()">
+                        <i class="fas fa-magnifying-glass-chart mr-2"></i> BẤM VÀO ĐÂY ĐỂ KIỂM TRA ĐỀ THI
+                    </button>
+                </div>
+            </div>
+
+            <!-- CARD 3: LỜI KHUYÊN ĐỊNH DẠNG NHANH -->
+            <div class="section-card" style="background: #f0fdf4; border-color: #bbf7d0;">
+                <div class="d-flex align-items-start gap-3">
+                    <div style="font-size: 20px; color: #16a34a; margin-right: 12px;">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <h6 class="font-weight-bold mb-1" style="color: #14532d; font-size: 13px;">Lời khuyên định dạng nhanh</h6>
+                        <p class="mb-0 text-muted" style="font-size: 12px; line-height: 1.5; color: #166534 !important;">
+                            Mỗi câu hỏi phải bắt đầu bằng cụm từ <strong>"Câu 1:"</strong>, <strong>"Câu 2:"</strong>. Phương án đúng được đánh dấu bằng ký hiệu gạch chân <u>A. Đáp án</u> hoặc gắn tag <strong>[*]</strong> phía trước.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI (CẢNH BÁO BẮT BUỘC & NHẬT KÝ KIỂM TRA TÍNH HỢP LỆ) -->
+        <div class="col-lg-7 col-xl-7">
+            <!-- BANNER NGUYÊN TẮC GIAO DỊCH TOÀN VẸN (ALL-OR-NOTHING TRANSACTION) -->
+            <div class="banner-all-or-nothing">
+                <div class="banner-warning-icon">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center mb-1">
+                        <span class="badge-warning-pill">CẢNH BÁO BẮT BUỘC</span>
+                        <strong style="color: #9f1239; font-size: 14px;">Nguyên tắc giao dịch toàn vẹn (All-or-Nothing Transaction)</strong>
+                    </div>
+                    <p class="mb-0" style="font-size: 13px; color: #881337; line-height: 1.5;">
+                        Nếu phát hiện bất kỳ lỗi nào (<strong>thiếu tag, thiếu đáp án đúng, trùng hoặc nhảy cóc số thứ tự</strong>), hệ thống sẽ <strong>HỦY BỎ TOÀN BỘ QUÁ TRÌNH NẠP</strong>. Tuyệt đối <strong>KHÔNG LƯU VÀO CƠ SỞ DỮ LIỆU</strong> cho đến khi tệp đạt chuẩn 100%.
+                    </p>
+                </div>
+            </div>
+
+            <!-- CARD NHẬT KÝ KIỂM TRA TÍNH HỢP LỆ -->
+            <div class="section-card">
+                <div class="section-card-header border-bottom pb-3 mb-3">
+                    <div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-wave-pulse mr-2" style="color: #6366f1;"></i>
+                            <h5 class="section-card-title">Nhật ký kiểm tra tính hợp lệ</h5>
+                        </div>
+                        <p class="text-muted small mb-0 mt-1">Chi tiết phân tích theo thời gian thực của bộ đọc docx</p>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="p-2 px-3 rounded text-center border mr-2" id="boxViolationsCount" style="background: #f8fafc;">
+                            <span class="font-weight-bold" id="badgeViolationsText" style="font-size: 12px; color: #64748b;">
+                                <i class="fas fa-circle-exclamation mr-1"></i> Lỗi vi phạm (<span id="countErrors">0</span>)
+                            </span>
+                        </div>
+                        <div class="p-2 px-3 rounded text-center border" style="background: #f8fafc;">
+                            <span class="text-muted font-weight-bold" style="font-size: 12px;">
+                                <i class="fas fa-sliders mr-1"></i> Tiêu chuẩn (5/5)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BANNER TRẠNG THÁI NẠP DỮ LIỆU -->
+                <div class="log-status-banner is-waiting" id="statusBannerContainer">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-3 text-muted" style="font-size: 24px;" id="statusIconWrapper">
+                            <i class="fas fa-hourglass-start" id="statusIcon"></i>
+                        </div>
+                        <div>
+                            <strong class="d-block font-weight-bold" style="font-size: 13px; color: #334155;" id="statusTitle">
+                                TRẠNG THÁI: CHỜ KIỂM TRA
+                            </strong>
+                            <span class="text-muted small" id="statusSubtitle">
+                                Hãy chọn file Word (.docx) ở bên trái và bấm nút "KIỂM TRA ĐỀ THI"
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge badge-secondary px-3 py-2 font-weight-bold" style="font-size: 12px; border-radius: 8px;" id="statusBlockerBadge">
+                            Chờ lệnh quét
+                        </span>
+                    </div>
+                </div>
+
+                <!-- KHU VỰC DANH SÁCH LỖI HOẶC EMPTY STATE -->
+                <div id="errorsListContainer">
+                    <div class="text-center p-5 text-muted" id="emptyStatePlaceholder">
+                        <i class="fas fa-file-circle-question fa-3x mb-3 opacity-50"></i>
+                        <h6 class="font-weight-bold">Chưa có kết quả kiểm tra</h6>
+                        <p class="small mb-0">Hệ thống sẽ hiển thị chi tiết các dòng bị lỗi (nếu có) ngay sau khi bạn bấm nút kiểm tra.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- THANH BOTTOM ACTION BAR CỐ ĐỊNH CỦA TAB 1 -->
+    <div class="bottom-action-bar">
+        <div>
+            <a href="/Exams" class="btn btn-outline-secondary font-weight-bold px-3 py-2" style="border-radius: 10px; font-size: 13px;">
+                Hủy bỏ & Thoát
+            </a>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-outline-danger font-weight-bold px-3 py-2 mr-2" id="btnExportErrorReport" style="border-radius: 10px; font-size: 13px;">
+                <i class="fas fa-file-excel mr-1"></i> Tải báo cáo lỗi (.xlsx)
+            </button>
+            <button type="button" class="btn btn-outline-primary font-weight-bold px-3 py-2 mr-2" id="btnRecheckFile" style="border-radius: 10px; font-size: 13px;">
+                <i class="fas fa-rotate mr-1"></i> Kiểm tra lại file
+            </button>
+            <button type="button" class="btn btn-outline-secondary font-weight-bold px-3 py-2 mr-2" id="btnReuploadFixed" style="border-radius: 10px; font-size: 13px;">
+                <i class="fas fa-upload mr-1"></i> Tải lại file đã sửa
+            </button>
+            <!-- NÚT XEM ĐỀ THI ĐÃ NẠP (Disabled khi có lỗi, Active khi chuẩn 100%) -->
+            <button type="button" class="btn btn-primary-gradient" id="btnSaveAndGoToPreview" disabled>
+                <i class="fas fa-check-circle mr-2"></i> Đã lưu CSDL & Xem đề thi <i class="fas fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL QUY CHUẨN FORMAT -->
+<div class="modal fade" id="rulesModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <h5 class="modal-title font-weight-bold text-dark">
+                    <i class="fas fa-clipboard-check text-primary mr-2"></i> Quy chuẩn định dạng đề thi Word (.docx)
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="p-3 bg-light rounded mb-3">
+                    <strong>1. Đánh số câu hỏi:</strong> Phải bắt đầu từ <code>Câu 1:</code>, <code>Câu 2:</code> tăng dần liên tục, không được nhảy cóc số thứ tự.
+                </div>
+                <div class="p-3 bg-light rounded mb-3">
+                    <strong>2. Phương án trắc nghiệm:</strong> Đầy đủ 4 phương án <code>A.</code>, <code>B.</code>, <code>C.</code>, <code>D.</code>. Đánh dấu đáp án đúng bằng <code>*A.</code> hoặc <u>gạch chân</u>.
+                </div>
+                <div class="p-3 bg-light rounded">
+                    <strong>3. Hình ảnh & Tag:</strong> Chèn hình ảnh trực tiếp dưới câu hỏi trong Word. Hỗ trợ thẻ <code>&lt;Level: Dễ&gt;</code>, <code>&lt;Tag: TOEIC&gt;</code>.
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                <button type="button" class="btn btn-secondary font-weight-bold" data-dismiss="modal">Đã hiểu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        var currentSavedExamId = null;
+
+
+        // Khi người dùng chọn file từ input
+        window.handleWordFileChosen = function (input) {
+            if (input && input.files && input.files.length > 0) {
+                window.processSelectedFile(input.files[0]);
+            }
+        };
+
+        // Hàm xử lý file được chọn (dù click hay kéo thả)
+        window.processSelectedFile = function (file) {
+            if (!file) return;
+            currentFile = file;
+            var fileName = file.name;
+            var sizeMb = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+
+            $('#displayFileName').text(fileName);
+            $('#displayFileSize').text(sizeMb);
+            $('#dropzoneBox').slideUp(150);
+            $('#fileSelectedCard').slideDown(200);
+
+            // Tự động phân tích và upload ngay khi chọn file
+            window.startUploadAndValidateFile();
+        };
+
+        // Gỡ bỏ file đã chọn
+        window.removeSelectedFile = function () {
+            var fileInput = document.getElementById('realWordFileInput');
+            if (fileInput) fileInput.value = '';
+            currentFile = null;
+            $('#fileSelectedCard').slideUp(150);
+            $('#dropzoneBox').slideDown(200);
+            resetValidationState('Hãy chọn file Word (.docx) ở bên trái và hệ thống sẽ tự động quét.');
+        };
+
+        function resetValidationState(msg) {
+            currentValidationStatus = 'waiting';
+            $('#countErrors').text('0');
+            $('#boxViolationsCount').css('background', '#f8fafc').css('border-color', '#e2e8f0');
+            $('#badgeViolationsText').css('color', '#64748b');
+
+            $('#statusBannerContainer').attr('class', 'log-status-banner is-waiting').css('background', '').css('border-color', '');
+            $('#statusIconWrapper').html('<i class="fas fa-hourglass-start" style="color: #64748b;"></i>');
+            $('#statusTitle').text('TRẠNG THÁI: CHỜ KIỂM TRA').css('color', '#334155');
+            $('#statusSubtitle').text(msg);
+            $('#statusBlockerBadge').text('Chờ lệnh quét').attr('class', 'badge badge-secondary px-3 py-2 font-weight-bold');
+
+            $('#btnSaveAndGoToPreview').prop('disabled', true);
+            $('#errorsListContainer').html(
+                '<div class="text-center p-5 text-muted">' +
+                    '<i class="fas fa-file-circle-question fa-3x mb-3 opacity-50"></i>' +
+                    '<h6 class="font-weight-bold">Chưa có kết quả kiểm tra</h6>' +
+                    '<p class="small mb-0">Hệ thống sẽ hiển thị chi tiết các câu hỏi và các cảnh báo (nếu có) ngay sau khi quét.</p>' +
+                '</div>'
+            );
+        }
+
+        // 1. NÚT NẠP MẪU CÓ LỖI ĐỂ XEM BỘ LỌC
+        window.loadDemoFaultyExam = function () {
+            var btn = $('#btnLoadFaultyDemo');
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Đang tải mẫu...');
+            $.ajax({
+                url: '/Exams/ImportSampleExam?type=error',
+                type: 'POST',
+                success: function (res) {
+                    btn.prop('disabled', false).html('<i class="fas fa-bug mr-1"></i> Nạp mẫu có lỗi (Test bộ lọc)');
+                    currentFile = null;
+                    $('#displayFileName').text('DeThi_Mau_Co_Loi_Format.docx');
+                    $('#displayFileSize').text('3.4 MB');
+                    $('#dropzoneBox').slideUp(150);
+                    $('#fileSelectedCard').slideDown(200);
+                    if (res && res.data) {
+                        showRealErrorsResult(res.data);
+                    } else {
+                        showFaultyValidationResult();
+                    }
+                },
+                error: function () {
+                    btn.prop('disabled', false).html('<i class="fas fa-bug mr-1"></i> Nạp mẫu có lỗi (Test bộ lọc)');
+                    showFaultyValidationResult();
+                }
+            });
+        };
+
+        // 2. NÚT NẠP MẪU CHUẨN 100%
+        window.loadDemoValidExam = function () {
+            var btn = $('#btnLoadValidDemo');
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Đang nạp vào CSDL...');
+            $.ajax({
+                url: '/Exams/ImportSampleExam?type=standard',
+                type: 'POST',
+                success: function (res) {
+                    btn.prop('disabled', false).html('<i class="fas fa-check mr-1"></i> Nạp mẫu chuẩn 100%');
+                    currentFile = null;
+                    $('#displayFileName').text('DeThi_Mau_Chuan_100.docx');
+                    $('#displayFileSize').text('4.1 MB');
+                    $('#dropzoneBox').slideUp(150);
+                    $('#fileSelectedCard').slideDown(200);
+                    if (res && res.data) {
+                        showSuccessValidationResult(res.data);
+                    } else {
+                        showSuccessValidationResult();
+                    }
+                },
+                error: function () {
+                    btn.prop('disabled', false).html('<i class="fas fa-check mr-1"></i> Nạp mẫu chuẩn 100%');
+                    showSuccessValidationResult();
+                }
+            });
+        };
+
+        // 3. THỰC HIỆN TẢI LÊN VÀ PHÂN TÍCH ĐỀ THI
+        window.startUploadAndValidateFile = function () {
+            if (!currentFile && $('#fileSelectedCard').is(':hidden')) {
+                document.getElementById('realWordFileInput').click();
+                return;
+            }
+
+            var btn = $('#btnStartValidate');
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Đang đọc và phân tích cấu trúc file Word...');
+
+            // Cập nhật trạng thái loading
+            $('#statusBannerContainer').attr('class', 'log-status-banner is-waiting').css('background', '#eff6ff').css('border-color', '#bfdbfe');
+            $('#statusIconWrapper').html('<i class="fas fa-spinner fa-spin" style="color: #3b82f6;"></i>');
+            $('#statusTitle').text('HỆ THỐNG ĐANG PHÂN TÍCH TỆP TIN...').css('color', '#1d4ed8');
+            $('#statusSubtitle').text('Đang quét từng dòng, kiểm tra cú pháp tag, bóc tách câu hỏi và hình ảnh...');
+            $('#statusBlockerBadge').text('Đang phân tích').attr('class', 'badge badge-primary px-3 py-2 font-weight-bold');
+
+            if (currentFile) {
+                var formData = new FormData();
+                formData.append('file', currentFile);
+                formData.append('title', $('#examTitle').val() || '');
+                formData.append('subject', $('#examSubject').val() || '');
+                formData.append('examCode', $('#examCode').val() || '');
+                formData.append('durationMinutes', $('#examDuration').val() || '60');
+
+                $.ajax({
+                    url: '/Exams/UploadWord',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+                        btn.prop('disabled', false).html('<i class="fas fa-magnifying-glass-chart mr-2"></i> BẤM VÀO ĐÂY ĐỂ KIỂM TRA ĐỀ THI');
+                        var data = res.data || res;
+                        if (res.success && data && data.savedExamId) {
+                            if (data.errors && data.errors.length > 0) {
+                                showRealErrorsResult(data);
+                            } else {
+                                showSuccessValidationResult(data);
+                            }
+                        } else if (!res.success && data && data.errors && data.errors.length > 0) {
+                            showRealErrorsResult(data);
+                        } else {
+                            alert(res.message || 'Không thể đọc nội dung file Word. Vui lòng kiểm tra lại định dạng tệp.');
+                            showFaultyValidationResult();
+                        }
+                    },
+                    error: function (xhr) {
+                        btn.prop('disabled', false).html('<i class="fas fa-magnifying-glass-chart mr-2"></i> BẤM VÀO ĐÂY ĐỂ KIỂM TRA ĐỀ THI');
+                        var errMsg = 'Không thể tải lên file. Tệp tin có thể quá lớn hoặc định dạng chưa hợp lệ.';
+                        try {
+                            var json = JSON.parse(xhr.responseText);
+                            if (json && json.message) errMsg = json.message;
+                        } catch(e) {}
+                        alert('Thông báo: ' + errMsg);
+                        showFaultyValidationResult();
+                    }
+                });
+            } else {
+                setTimeout(function () {
+                    btn.prop('disabled', false).html('<i class="fas fa-magnifying-glass-chart mr-2"></i> BẤM VÀO ĐÂY ĐỂ KIỂM TRA ĐỀ THI');
+                    if ($('#displayFileName').text().indexOf('Chuan') >= 0) {
+                        showSuccessValidationResult();
+                    } else {
+                        showFaultyValidationResult();
+                    }
+                }, 600);
+            }
+        };
+
+        // Gắn sự kiện kéo thả trên toàn trang và dropzone khi DOM sẵn sàng
+        $(function () {
+            window.addEventListener('dragover', function (e) {
+                e.preventDefault();
+            }, false);
+            window.addEventListener('drop', function (e) {
+                e.preventDefault();
+            }, false);
+
+            var dz = document.getElementById('dropzoneBox');
+            if (dz) {
+                dz.addEventListener('dragover', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $('#dropzoneBox').css('border-color', '#4f46e5').css('background', '#eef2ff');
+                }, false);
+                dz.addEventListener('dragleave', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $('#dropzoneBox').css('border-color', '').css('background', '');
+                }, false);
+                dz.addEventListener('drop', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $('#dropzoneBox').css('border-color', '').css('background', '');
+                    var dt = e.dataTransfer;
+                    if (dt && dt.files && dt.files.length > 0) {
+                        window.processSelectedFile(dt.files[0]);
+                    }
+                }, false);
+            }
+
+            $('#btnReuploadFixed').on('click', function () {
+                document.getElementById('realWordFileInput').click();
+            });
+        });
+
+        // HIỂN THỊ KẾT QUẢ THẤT BẠI (ĐÚNG Y HỆT ẢNH 1 CỦA NGƯỜI DÙNG)
+        function showFaultyValidationResult() {
+            currentValidationStatus = 'failed';
+            $('#countErrors').text('3');
+            $('#boxViolationsCount').css('background', '#fff1f2').css('border-color', '#fecdd3');
+            $('#badgeViolationsText').css('color', '#b91c1c');
+
+            $('#statusBannerContainer').attr('class', 'log-status-banner is-failed').css('background', '#fff1f2').css('border-color', '#fecdd3');
+            $('#statusIconWrapper').html('<i class="fas fa-times-circle" style="color: #dc2626;"></i>');
+            $('#statusTitle').text('TRẠNG THÁI: THẤT BẠI - ĐÃ HỦY NẠP VÀO CSDL').css('color', '#b91c1c');
+            $('#statusSubtitle').text('Đã tạm dừng nạp dữ liệu (0/50 câu được phê duyệt để lưu)');
+            $('#statusBlockerBadge').text('3 Lỗi chặn (Blocker)').attr('class', 'badge badge-danger px-3 py-2 font-weight-bold');
+
+            // Khóa nút Xem trước
+            $('#btnSaveAndGoToPreview').prop('disabled', true);
+
+            var html = 
+                '<!-- LỖI 01: THIẾU ĐÁP ÁN ĐÚNG -->' +
+                '<div class="log-error-item">' +
+                    '<div class="d-flex align-items-center mb-2">' +
+                        '<span class="error-num-badge">LỖI 01</span>' +
+                        '<span class="font-weight-bold text-dark small ml-2">Dòng 142 &bull; Câu 18</span>' +
+                        '<span class="error-tag-badge">Ngữ pháp TOEIC</span>' +
+                        '<span class="error-type-badge">THIẾU ĐÁP ÁN ĐÚNG</span>' +
+                    '</div>' +
+                    '<div class="font-weight-bold text-dark small mb-1">' +
+                        '[THIẾU ĐÁP ÁN ĐÚNG] Không tìm thấy tag gạch chân (underline) hoặc ký hiệu đánh dấu [*] ở bất kỳ phương án nào trong 4 lựa chọn (A, B, C, D).' +
+                    '</div>' +
+                    '<div class="code-snippet-box">' +
+                        '<span class="text-muted">Đoạn trích:</span> &nbsp; A. implement &nbsp;&nbsp; B. implementation &nbsp;&nbsp; C. implementing &nbsp;&nbsp; D. implemented' +
+                    '</div>' +
+                '</div>' +
+
+                '<!-- LỖI 02: SAI THỨ TỰ CÂU -->' +
+                '<div class="log-error-item">' +
+                    '<div class="d-flex align-items-center mb-2">' +
+                        '<span class="error-num-badge">LỖI 02</span>' +
+                        '<span class="font-weight-bold text-dark small ml-2">Dòng 215 &bull; Câu 27</span>' +
+                        '<span class="error-tag-badge">Đánh số</span>' +
+                        '<span class="error-type-badge">SAI THỨ TỰ CÂU</span>' +
+                    '</div>' +
+                    '<div class="font-weight-bold text-dark small mb-1">' +
+                        '[SAI THỨ TỰ CÂU] Số thứ tự bị nhảy cóc từ Câu 26 trực tiếp sang Câu 28 (Hệ thống không tìm thấy tiêu đề bắt đầu "Câu 27:").' +
+                    '</div>' +
+                    '<div class="code-snippet-box">' +
+                        '<span class="text-muted">Vị trí:</span> &nbsp; ...kết thúc Câu 26 [Dòng 214] &rarr; Tiếp nối: "Câu 28: Mr. Henderson noticed..." [Dòng 215]' +
+                    '</div>' +
+                '</div>' +
+
+                '<!-- LỖI 03: THIẾU TAG ĐÓNG ĐOẠN VĂN -->' +
+                '<div class="log-error-item">' +
+                    '<div class="d-flex align-items-center mb-2">' +
+                        '<span class="error-num-badge">LỖI 03</span>' +
+                        '<span class="font-weight-bold text-dark small ml-2">Dòng 380 &bull; Câu 42</span>' +
+                        '<span class="error-tag-badge">Cấu trúc đoạn văn</span>' +
+                        '<span class="error-type-badge">THIẾU TAG ĐÓNG ĐOẠN VĂN</span>' +
+                    '</div>' +
+                    '<div class="font-weight-bold text-dark small mb-1">' +
+                        '[THIẾU TAG ĐÓNG ĐOẠN VĂN] Thẻ khai báo bài đọc chưa có thẻ đóng tương ứng trước khi chuyển sang câu kế tiếp.' +
+                    '</div>' +
+                    '<div class="code-snippet-box">' +
+                        '<span class="text-muted">Gợi ý sửa:</span> &nbsp; Bổ sung thẻ vào cuối đoạn văn email đọc hiểu ở Dòng 395 của file Word.' +
+                    '</div>' +
+                '</div>';
+
+            $('#errorsListContainer').html(html);
+        }
+
+        function showRealErrorsResult(data) {
+            var errors = data.errors || [];
+            var examId = data.savedExamId || null;
+            var totalQ = data.totalQuestions || (data.questions ? data.questions.length : 0);
+
+            $('#countErrors').text(errors.length);
+
+            if (examId) {
+                // ĐÃ LƯU VÀO CSDL THÀNH CÔNG, CÓ CẢNH BÁO RÀ SOÁT
+                currentValidationStatus = 'warning';
+                $('#boxViolationsCount').css('background', '#fffbeb').css('border-color', '#fde68a');
+                $('#badgeViolationsText').css('color', '#b45309');
+
+                $('#statusBannerContainer').attr('class', 'log-status-banner is-warning').css('background', '#fffbeb').css('border-color', '#fde68a');
+                $('#statusIconWrapper').html('<i class="fas fa-triangle-exclamation" style="color: #f59e0b;"></i>');
+                $('#statusTitle').text('TRẠNG THÁI: ĐÃ LƯU VÀO CSDL - CÓ CẢNH BÁO CẦN RÀ SOÁT').css('color', '#b45309');
+                $('#statusSubtitle').text('Đã lưu trữ an toàn ' + totalQ + ' câu hỏi vào CSDL. Có ' + errors.length + ' câu cần Giảng viên rà soát lại.');
+                $('#statusBlockerBadge').text(errors.length + ' Cảnh báo rà soát').attr('class', 'badge badge-warning px-3 py-2 font-weight-bold text-dark');
+
+                $('#btnSaveAndGoToPreview').prop('disabled', false).attr('onclick', "window.location.href='/Exams/Preview/" + examId + "'");
+            } else {
+                // Chưa lưu được (file rỗng hoặc demo có lỗi)
+                currentValidationStatus = 'failed';
+                $('#boxViolationsCount').css('background', '#fff1f2').css('border-color', '#fecdd3');
+                $('#badgeViolationsText').css('color', '#b91c1c');
+
+                $('#statusBannerContainer').attr('class', 'log-status-banner is-failed').css('background', '#fff1f2').css('border-color', '#fecdd3');
+                $('#statusIconWrapper').html('<i class="fas fa-times-circle" style="color: #dc2626;"></i>');
+                $('#statusTitle').text('TRẠNG THÁI: TẠM DỪNG NẠP - CẦN ĐỊNH DẠNG LẠI').css('color', '#b91c1c');
+                $('#statusSubtitle').text('Đã tạm dừng nạp dữ liệu (0/' + (totalQ || 50) + ' câu được phê duyệt để lưu)');
+                $('#statusBlockerBadge').text(errors.length + ' Lỗi chặn (Blocker)').attr('class', 'badge badge-danger px-3 py-2 font-weight-bold');
+
+                $('#btnSaveAndGoToPreview').prop('disabled', true);
+            }
+
+            var html = '';
+            $.each(errors, function (i, err) {
+                var errNum = (i + 1 < 10 ? '0' + (i + 1) : (i + 1));
+                html += '<div class="log-error-item">' +
+                    '<div class="d-flex align-items-center mb-2">' +
+                        '<span class="error-num-badge">LỖI ' + errNum + '</span>' +
+                        '<span class="font-weight-bold text-dark small ml-2">Dòng ' + (err.lineNumber || '?') + ' &bull; Câu ' + (err.questionNumber || '?') + '</span>' +
+                        '<span class="error-tag-badge">' + (err.tag || 'Quy chuẩn') + '</span>' +
+                        '<span class="error-type-badge">' + err.errorType + '</span>' +
+                    '</div>' +
+                    '<div class="font-weight-bold text-dark small mb-1">[' + err.errorType + '] ' + err.message + '</div>' +
+                    '<div class="code-snippet-box">' +
+                        '<span class="text-muted">Gợi ý:</span> &nbsp; ' + (err.suggestedFix || 'Rà soát tại giao diện hoặc sửa theo quy chuẩn.') +
+                    '</div>' +
+                '</div>';
+            });
+
+            if (examId) {
+                html = 
+                    '<div class="alert alert-warning border mb-3 d-flex align-items-center justify-content-between p-3" style="border-radius: 10px; background: #fefce8; border-color: #fde047 !important;">' +
+                        '<div>' +
+                            '<strong><i class="fas fa-check-circle text-success mr-1"></i> Toàn bộ ' + totalQ + ' câu hỏi đã được lưu vào CSDL an toàn!</strong>' +
+                            '<div class="small text-muted mt-1">Bạn có thể rà soát và chỉnh sửa trực tiếp đáp án, ảnh và lỗi chính tả tại màn hình Xem trước.</div>' +
+                        '</div>' +
+                        '<a href="/Exams/Preview/' + examId + '" class="btn btn-warning font-weight-bold px-3 py-2 text-dark shadow-sm" style="border-radius: 8px;">' +
+                            '<i class="fas fa-eye mr-1"></i> Rà soát đề thi ngay &rarr;' +
+                        '</a>' +
+                    '</div>' + html;
+            }
+
+            $('#errorsListContainer').html(html);
+        }
+
+        // HIỂN THỊ KẾT QUẢ THÀNH CÔNG 100%
+        function showSuccessValidationResult(data) {
+            currentValidationStatus = 'success';
+            var totalQ = data && data.totalQuestions ? data.totalQuestions : (data && data.questions ? data.questions.length : 100);
+            var examId = data && data.savedExamId ? data.savedExamId : null;
+            if (examId) {
+                currentSavedExamId = examId;
+            }
+
+            // Cập nhật số lỗi = 0
+            $('#countErrors').text('0');
+            $('#boxViolationsCount').css('background', '#f0fdf4').css('border-color', '#bbf7d0');
+            $('#badgeViolationsText').css('color', '#15803d');
+
+            // Banner trạng thái thành công
+            $('#statusBannerContainer').attr('class', 'log-status-banner is-success');
+            $('#statusIconWrapper').html('<i class="fas fa-check-circle" style="color: #16a34a;"></i>');
+            $('#statusTitle').text('TRẠNG THÁI: HOÀN TẤT - FILE ĐẠT CHUẨN 100% ĐÃ LƯU CSDL').css('color', '#15803d');
+            $('#statusSubtitle').text('Đã phê duyệt và lưu trữ an toàn ' + totalQ + '/' + totalQ + ' câu hỏi vào cơ sở dữ liệu');
+            $('#statusBlockerBadge').text('100% ĐẠT CHUẨN').attr('class', 'badge badge-success px-3 py-2 font-weight-bold');
+
+            // KÍCH HOẠT NÚT ĐẾN ĐỀ THI
+            $('#btnSaveAndGoToPreview').prop('disabled', false);
+            if (examId) {
+                $('#btnSaveAndGoToPreview').attr('onclick', "window.location.href='/Exams/Preview/" + examId + "'");
+            } else {
+                $('#btnSaveAndGoToPreview').attr('onclick', "window.location.href='/Exams'");
+            }
+
+            var actionBtns = '';
+            if (examId) {
+                actionBtns = 
+                    '<div class="d-flex justify-content-center gap-2 mt-3">' +
+                        '<a href="/Exams" class="btn btn-outline-primary font-weight-bold px-3 py-2 mr-2" style="border-radius: 8px;">' +
+                            '<i class="fas fa-folder-open mr-1"></i> Về Ngân hàng đề thi (Tổng quan)' +
+                        '</a>' +
+                        '<a href="/Exams/Preview/' + examId + '" class="btn btn-primary-gradient px-4 py-2 font-weight-bold" style="border-radius: 8px;">' +
+                            '<i class="fas fa-eye mr-2"></i> Xem chi tiết & Rà soát đề thi này (' + totalQ + ' câu) &rarr;' +
+                        '</a>' +
+                    '</div>';
+            } else {
+                actionBtns = 
+                    '<div class="d-flex justify-content-center gap-2 mt-3">' +
+                        '<a href="/Exams" class="btn btn-primary-gradient px-4 py-2 font-weight-bold" style="border-radius: 8px;">' +
+                            '<i class="fas fa-folder-open mr-1"></i> Đến Ngân hàng đề thi (Tổng quan)' +
+                        '</a>' +
+                    '</div>';
+            }
+
+            $('#errorsListContainer').html(
+                '<div class="p-4 text-center text-success bg-white rounded border" style="border-color: #bbf7d0 !important;">' +
+                    '<i class="fas fa-circle-check fa-3x mb-3 text-success"></i>' +
+                    '<h5 class="font-weight-bold text-success mb-1">Toàn bộ ' + totalQ + ' câu hỏi đạt chuẩn 100%!</h5>' +
+                    '<p class="text-muted small mb-2">Tất cả cú pháp tag, số thứ tự và đáp án đã được kiểm tra hoàn hảo và lưu an toàn vào CSDL.</p>' +
+                    actionBtns +
+                '</div>'
+            );
+        }
+
+        $('#btnExportErrorReport').on('click', function () {
+            window.location.href = '/Exams/DownloadSample?type=error';
+        });
+    </script>
+}

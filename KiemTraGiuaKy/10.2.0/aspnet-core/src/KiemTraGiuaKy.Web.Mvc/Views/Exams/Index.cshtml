@@ -1,0 +1,380 @@
+@model List<KiemTraGiuaKy.Exams.Dto.ExamDto>
+@{
+    Layout = "~/Views/Shared/_EduExamLayout.cshtml";
+    ViewBag.Title = "Ngân hàng Đề thi";
+    ViewBag.ActiveMenu = "Index";
+}
+
+@section styles {
+    <style>
+        .bank-header-banner {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .metric-card-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            transition: all 0.2s;
+        }
+
+        .metric-card-box:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .metric-icon-sq {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 14px;
+        }
+
+        .exam-table-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .exam-table {
+            margin-bottom: 0;
+        }
+
+        .exam-table th {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            border-top: none;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 14px 20px;
+        }
+
+        .exam-table td {
+            padding: 18px 20px;
+            vertical-align: middle;
+            border-top: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
+        .exam-table tr:hover td {
+            background: #fbfcfe;
+        }
+
+        .badge-code {
+            background: #eef2ff;
+            color: #4f46e5;
+            font-weight: 700;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .badge-status-approved {
+            background: #dcfce7;
+            color: #15803d;
+            font-weight: 700;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-status-review {
+            background: #fef3c7;
+            color: #b45309;
+            font-weight: 700;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-action-view {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            color: #ffffff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-action-view:hover {
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-action-delete {
+            background: #fff1f2;
+            color: #be123c;
+            border: 1px solid #fecdd3;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-action-delete:hover {
+            background: #ffe4e6;
+            color: #9f1239;
+        }
+    </style>
+}
+
+<!-- TOP BANNER -->
+<div class="bank-header-banner">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h2 style="font-size: 22px; font-weight: 800; color: #0f172a; margin: 0;">
+                <i class="fas fa-folder-open text-primary mr-2"></i> Ngân hàng Đề thi
+            </h2>
+            <span class="badge badge-primary px-2 py-1 font-weight-bold ml-2" style="font-size: 11px; border-radius: 6px;">
+                @(Model?.Count ?? 0) ĐỀ THI ĐÃ NẠP
+            </span>
+        </div>
+        <p class="text-muted small mb-0 mt-1">
+            Danh sách tất cả các đề thi đã import từ file Word (.docx) vào cơ sở dữ liệu
+        </p>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+        <a href="/Exams/DownloadSample?type=standard" class="btn btn-outline-secondary font-weight-bold btn-sm px-3 mr-2" style="border-radius: 8px;">
+            <i class="fas fa-download mr-1"></i> Tải file mẫu .docx
+        </a>
+        <a href="/Exams/Create" class="btn btn-primary font-weight-bold px-4 shadow-sm" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); border: none; border-radius: 10px;">
+            <i class="fas fa-plus-circle mr-2"></i> Tạo đề thi mới từ file Word (.docx)
+        </a>
+    </div>
+</div>
+
+<!-- 4 THỐNG KÊ METRIC CARDS -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+        <div class="metric-card-box">
+            <div class="d-flex align-items-center">
+                <div class="metric-icon-sq" style="background: #eef2ff; color: #4f46e5;">
+                    <i class="fas fa-file-lines"></i>
+                </div>
+                <div>
+                    <h5 class="font-weight-bold mb-0 text-dark">@(Model?.Count ?? 0)</h5>
+                    <small class="text-muted font-weight-bold">Tổng đề trong kho</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+        <div class="metric-card-box">
+            <div class="d-flex align-items-center">
+                <div class="metric-icon-sq" style="background: #dcfce7; color: #16a34a;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <h5 class="font-weight-bold mb-0 text-dark">@(Model?.Count(e => e.Status == "Đã duyệt") ?? 0)</h5>
+                    <small class="text-muted font-weight-bold">Đề đã phê duyệt</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+        <div class="metric-card-box">
+            <div class="d-flex align-items-center">
+                <div class="metric-icon-sq" style="background: #fef3c7; color: #d97706;">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                    <h5 class="font-weight-bold mb-0 text-dark">@(Model?.Count(e => e.Status != "Đã duyệt") ?? 0)</h5>
+                    <small class="text-muted font-weight-bold">Chờ rà soát chính tả</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="metric-card-box">
+            <div class="d-flex align-items-center">
+                <div class="metric-icon-sq" style="background: #e0e7ff; color: #4338ca;">
+                    <i class="fas fa-circle-question"></i>
+                </div>
+                <div>
+                    <h5 class="font-weight-bold mb-0 text-dark">@(Model?.Sum(e => e.TotalQuestions) ?? 0)</h5>
+                    <small class="text-muted font-weight-bold">Tổng câu trắc nghiệm</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BẢNG DANH SÁCH ĐỀ THI TRONG NGÂN HÀNG -->
+<div class="exam-table-card">
+    <div class="p-3 px-4 bg-white border-bottom d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-layer-group text-primary mr-2"></i>
+            <strong class="text-dark">Toàn bộ đề thi trong Ngân hàng</strong>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Tìm theo tên đề, mã đề..." style="width: 250px; border-radius: 8px;" onkeyup="filterTable()" />
+        </div>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-center p-5">
+            <i class="fas fa-folder-open text-muted fa-4x mb-3" style="opacity: 0.35;"></i>
+            <h5 class="font-weight-bold text-dark mb-1">Chưa có đề thi nào trong Ngân hàng</h5>
+            <p class="text-muted small mb-4">
+                Hãy tải lên tệp tin Word (.docx) của bạn. Hệ thống sẽ kiểm tra cấu trúc 100% chuẩn và lưu vào đây.
+            </p>
+            <a href="/Exams/Create" class="btn btn-primary font-weight-bold px-4 py-2" style="border-radius: 10px; background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); border: none;">
+                <i class="fas fa-cloud-arrow-up mr-2"></i> Nạp đề thi Word ngay
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table exam-table" id="examBankTable">
+                <thead>
+                    <tr>
+                        <th style="width: 140px;">MÃ ĐỀ</th>
+                        <th>TIÊU ĐỀ ĐỀ THI</th>
+                        <th>MÔN HỌC</th>
+                        <th class="text-center" style="width: 130px;">QUY MÔ</th>
+                        <th class="text-center" style="width: 110px;">THỜI LƯỢNG</th>
+                        <th style="width: 130px;">TRẠNG THÁI</th>
+                        <th class="text-right" style="width: 220px;">THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr id="row-exam-@item.Id">
+                            <td>
+                                <span class="badge-code">@(string.IsNullOrEmpty(item.ExamCode) ? "ENG-" + item.Id : item.ExamCode)</span>
+                            </td>
+                            <td>
+                                <a href="/Exams/Preview/@item.Id" class="font-weight-bold text-dark d-block text-decoration-none">
+                                    @item.Title
+                                </a>
+                                <small class="text-muted">
+                                    <i class="far fa-file-word mr-1 text-primary"></i> @(string.IsNullOrEmpty(item.OriginalFileName) ? "File Word đã tải" : item.OriginalFileName) &bull;
+                                    <i class="far fa-calendar mr-1 ml-2"></i> @item.CreationTime.ToString("dd/MM/yyyy HH:mm")
+                                </small>
+                            </td>
+                            <td>
+                                <span class="font-weight-600 text-dark">@(string.IsNullOrEmpty(item.Subject) ? "Tiếng Anh" : item.Subject)</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge badge-light border font-weight-bold text-dark px-2 py-1">
+                                    <i class="fas fa-list-ol mr-1 text-info"></i> @item.TotalQuestions câu
+                                </span>
+                                @if (item.QuestionsWithImageCount > 0)
+                                {
+                                    <span class="badge badge-light border text-primary ml-1 px-1 py-1" title="Có @item.QuestionsWithImageCount hình ảnh">
+                                        <i class="fas fa-image"></i> @item.QuestionsWithImageCount
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <span class="text-muted small font-weight-bold">
+                                    <i class="far fa-clock mr-1 text-warning"></i> @item.DurationMinutes phút
+                                </span>
+                            </td>
+                            <td>
+                                @if (item.Status == "Đã duyệt")
+                                {
+                                    <span class="badge-status-approved">
+                                        <i class="fas fa-circle-check"></i> Đã duyệt
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge-status-review">
+                                        <i class="fas fa-clock"></i> Chờ rà soát
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-right">
+                                <a href="/Exams/Preview/@item.Id" class="btn-action-view mr-2" title="Xem trước và rà soát lỗi chính tả, ảnh">
+                                    <i class="fas fa-eye"></i> Rà soát
+                                </a>
+                                <button type="button" class="btn-action-delete" onclick="deleteExam(@item.Id, '@item.Title')" title="Xóa đề này khỏi ngân hàng">
+                                    <i class="fas fa-trash-can"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        function filterTable() {
+            var val = $('#searchInput').val().toLowerCase();
+            $('#examBankTable tbody tr').filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(val) > -1);
+            });
+        }
+
+        function deleteExam(id, title) {
+            if (confirm('Bạn có chắc chắn muốn xóa đề thi: "' + title + '" khỏi ngân hàng đề thi?')) {
+                $.ajax({
+                    url: '/Exams/Delete',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (res) {
+                        if (res.success) {
+                            $('#row-exam-' + id).fadeOut(300, function () {
+                                $(this).remove();
+                            });
+                        } else {
+                            alert('Lỗi: ' + res.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Không thể xóa đề thi lúc này. Vui lòng thử lại!');
+                    }
+                });
+            }
+        }
+    </script>
+}
